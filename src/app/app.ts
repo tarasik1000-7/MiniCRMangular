@@ -1,11 +1,23 @@
 
 import { Component } from '@angular/core';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators
 } from '@angular/forms';
+
+function notBlank(control: AbstractControl): ValidationErrors | null {
+  const value = control.value as string | null;
+
+  if (typeof value === 'string' && value.trim().length === 0) {
+    return { blank: true };
+  }
+
+  return null;
+}
 
 @Component({
   selector: 'app-root',
@@ -20,11 +32,12 @@ export class App {
     companyName: ['', [
       Validators.required,
       Validators.minLength(2),
-      Validators.maxLength(30)
+      Validators.maxLength(30),
+      notBlank
     ]],
 
     companyCode: ['', [
-      Validators.pattern(/^[0-9]*$/)
+      Validators.pattern(/^[0-9]+$/)
     ]],
 
     vatCode: ['', [
@@ -39,9 +52,7 @@ export class App {
     ]],
 
     phone: ['', [
-      Validators.pattern(/^\+?[0-9]{9,11}$/),
-      Validators.minLength(10),
-      Validators.maxLength(12)
+      Validators.pattern(/^\+370[0-9]{8}$/)
     ]],
 
     contacts: this.fb.array([])
@@ -51,34 +62,52 @@ export class App {
     return this.companyForm.get('contacts') as FormArray;
   }
 
-  addContact() {
+  addContact(): void {
     const contact = this.fb.group({
       firstName: [''],
       lastName: [''],
       position: [''],
-      phone: ['']
+      phone: ['', [
+        Validators.pattern(/^\+370[0-9]{8}$/)
+      ]]
     });
 
     this.contacts.push(contact);
   }
 
-  removeContact(index: number) {
+  removeContact(index: number): void {
     this.contacts.removeAt(index);
   }
 
   isInvalid(field: string): boolean {
     const control = this.companyForm.get(field);
-    return !!(control && control.invalid &&
-      (control.touched || control.dirty));
+
+    return !!(
+      control &&
+      control.invalid &&
+      (control.touched || control.dirty)
+    );
   }
 
-  register() {
+  isContactInvalid(index: number, field: string): boolean {
+    const control = this.contacts.at(index).get(field);
+
+    return !!(
+      control &&
+      control.invalid &&
+      (control.touched || control.dirty)
+    );
+  }
+
+  register(): void {
     if (this.companyForm.invalid) {
       this.companyForm.markAllAsTouched();
       return;
     }
 
-    console.log('Registered company:');
-    console.log(this.companyForm.getRawValue());
+    const company = this.companyForm.getRawValue();
+
+    console.log('Company registered successfully!');
+    console.log('Registered company:', company);
   }
 }

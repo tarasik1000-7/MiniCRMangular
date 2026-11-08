@@ -1,80 +1,107 @@
 
 <div class="container">
+
   <div class="header">
     <h1>Mini CRM</h1>
     <p>Company Registration System</p>
   </div>
 
-  <form [formGroup]="companyForm"
-        (ngSubmit)="register()">
+  <form [formGroup]="companyForm" (ngSubmit)="register()">
 
     <h2>Company Information</h2>
 
     <div class="form-grid">
 
       <div class="field">
-        <label>Company Name *</label>
-        <input type="text"
-               formControlName="companyName"
-               placeholder="Enter company name"
-               maxlength="30">
+        <label for="companyName">Company Name *</label>
+        <input
+          id="companyName"
+          type="text"
+          formControlName="companyName"
+          placeholder="Enter company name"
+          maxlength="30"
+          [class.invalid]="isInvalid('companyName')"
+        >
 
         @if (isInvalid('companyName')) {
-          <small>
-            Company name must contain 2–30 characters.
+          <small class="error">
+            Company name is required (2–30 characters).
           </small>
         }
       </div>
 
       <div class="field">
-        <label>Company Code</label>
-        <input type="text"
-               formControlName="companyCode"
-               placeholder="Enter company code">
+        <label for="companyCode">Company Code</label>
+        <input
+          id="companyCode"
+          type="text"
+          formControlName="companyCode"
+          placeholder="Enter company code"
+          [class.invalid]="isInvalid('companyCode')"
+        >
 
         @if (isInvalid('companyCode')) {
-          <small>Only numbers are allowed.</small>
+          <small class="error">Only numbers are allowed.</small>
         }
       </div>
 
       <div class="field">
-        <label>VAT Registration Code</label>
-        <input type="text"
-               formControlName="vatCode"
-               placeholder="LT123456789">
+        <label for="vatCode">VAT Registration Code</label>
+        <input
+          id="vatCode"
+          type="text"
+          formControlName="vatCode"
+          placeholder="LT123456789"
+          [class.invalid]="isInvalid('vatCode')"
+        >
 
         @if (isInvalid('vatCode')) {
-          <small>Use numbers or LT followed by numbers.</small>
+          <small class="error">
+            Use numbers or LT followed by numbers.
+          </small>
         }
       </div>
 
       <div class="field">
-        <label>Address</label>
-        <input type="text"
-               formControlName="address"
-               placeholder="Enter company address">
+        <label for="address">Address</label>
+        <input
+          id="address"
+          type="text"
+          formControlName="address"
+          placeholder="Enter company address"
+        >
       </div>
 
       <div class="field">
-        <label>Email Address *</label>
-        <input type="email"
-               formControlName="email"
-               placeholder="company@example.com">
+        <label for="email">Email Address *</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="company@example.com"
+          [class.invalid]="isInvalid('email')"
+        >
 
         @if (isInvalid('email')) {
-          <small>Enter a valid email address.</small>
+          <small class="error">
+            A valid email address is required.
+          </small>
         }
       </div>
 
       <div class="field">
-        <label>Phone Number</label>
-        <input type="tel"
-               formControlName="phone"
-               placeholder="+37065312345">
+        <label for="phone">Phone Number</label>
+        <input
+          id="phone"
+          type="tel"
+          formControlName="phone"
+          placeholder="+37065312345"
+          [class.invalid]="isInvalid('phone')"
+        >
 
         @if (isInvalid('phone')) {
-          <small>
-            Phone must contain 10–12 characters.
+          <small class="error">
+            Use format +37065312345 (12 characters).
           </small>
         }
       </div>
@@ -84,25 +111,29 @@
     <div class="contacts-header">
       <h2>Contact Persons</h2>
 
-      <button type="button"
-              class="add-btn"
-              (click)="addContact()">
+      <button
+        type="button"
+        class="add-btn"
+        (click)="addContact()"
+      >
         + Add Contact
       </button>
     </div>
 
     <div formArrayName="contacts">
 
-      @for (contact of contacts.controls; track contact) {
-        <div class="contact-card"
-             [formGroupName]="$index">
+      @for (contact of contacts.controls; track contact; let i = $index) {
+
+        <div class="contact-card" [formGroupName]="i">
 
           <div class="contact-title">
-            <h3>Contact {{ $index + 1 }}</h3>
+            <h3>Contact {{ i + 1 }}</h3>
 
-            <button type="button"
-                    class="remove-btn"
-                    (click)="removeContact($index)">
+            <button
+              type="button"
+              class="remove-btn"
+              (click)="removeContact(i)"
+            >
               Remove
             </button>
           </div>
@@ -110,34 +141,54 @@
           <div class="form-grid">
 
             <div class="field">
-              <label>First Name</label>
-              <input type="text"
-                     formControlName="firstName"
-                     placeholder="First name">
+              <label [for]="'firstName-' + i">First Name</label>
+              <input
+                [id]="'firstName-' + i"
+                type="text"
+                formControlName="firstName"
+                placeholder="First name"
+              >
             </div>
 
             <div class="field">
-              <label>Last Name</label>
-              <input type="text"
-                     formControlName="lastName"
-                     placeholder="Last name">
+              <label [for]="'lastName-' + i">Last Name</label>
+              <input
+                [id]="'lastName-' + i"
+                type="text"
+                formControlName="lastName"
+                placeholder="Last name"
+              >
             </div>
 
             <div class="field">
-              <label>Position</label>
-              <input type="text"
-                     formControlName="position"
-                     placeholder="e.g. Manager">
+              <label [for]="'position-' + i">Position</label>
+              <input
+                [id]="'position-' + i"
+                type="text"
+                formControlName="position"
+                placeholder="e.g. Manager"
+              >
             </div>
 
             <div class="field">
-              <label>Phone Number</label>
-              <input type="tel"
-                     formControlName="phone"
-                     placeholder="+37065312345">
+              <label [for]="'contactPhone-' + i">Phone Number</label>
+              <input
+                [id]="'contactPhone-' + i"
+                type="tel"
+                formControlName="phone"
+                placeholder="+37065312345"
+                [class.invalid]="isContactInvalid(i, 'phone')"
+              >
+
+              @if (isContactInvalid(i, 'phone')) {
+                <small class="error">
+                  Use format +37065312345.
+                </small>
+              }
             </div>
 
           </div>
+
         </div>
       }
 
@@ -148,4 +199,5 @@
     </button>
 
   </form>
+
 </div>
